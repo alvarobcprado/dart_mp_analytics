@@ -11,11 +11,13 @@ class MPAnalyticsClient {
   /// {@macro mp_analytics_client}
   MPAnalyticsClient({
     required Map<String, Object> urlParameters,
-  }) : _urlParameters = urlParameters {
+    http.Client? client,
+  })  : _urlParameters = urlParameters,
+        _client = client ?? http.Client() {
     _initUris();
   }
 
-  static final http.Client _client = http.Client();
+  final http.Client _client;
   final Map<String, Object> _urlParameters;
   late final Uri _baseUri;
   late final Uri _debugBaseUri;
