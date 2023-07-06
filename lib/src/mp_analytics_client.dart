@@ -12,17 +12,25 @@ class MPAnalyticsClient {
   MPAnalyticsClient({
     required Map<String, Object> urlParameters,
     http.Client? client,
-  })  : _urlParameters = urlParameters,
-        _client = client ?? http.Client() {
-    _initUris();
+  }) {
+    _initialize(
+      client: client,
+      urlParameters: urlParameters,
+    );
   }
 
-  final http.Client _client;
-  final Map<String, Object> _urlParameters;
+  late final http.Client _client;
+  late final Map<String, Object> _urlParameters;
   late final Uri _baseUri;
   late final Uri _debugBaseUri;
 
-  void _initUris() {
+  void _initialize({
+    required Map<String, Object> urlParameters,
+    http.Client? client,
+  }) {
+    _client = client ?? http.Client();
+    _urlParameters = urlParameters;
+
     _baseUri = Uri(
       scheme: 'https',
       host: 'www.google-analytics.com',
