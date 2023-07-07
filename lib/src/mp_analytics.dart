@@ -40,8 +40,15 @@ class MPAnalytics {
     this.debugAnalytics = false,
     this.enabled = true,
     this.verbose = false,
+    Logger? logger,
+    MPAnalyticsUser? user,
+    MPAnalyticsClient? client,
   }) {
-    _initialize();
+    _initialize(
+      logger: logger,
+      user: user,
+      client: client,
+    );
   }
 
   /// The options used to configure the [MPAnalytics] instance. This must be an
@@ -75,18 +82,26 @@ class MPAnalytics {
   /// The session ID for this [MPAnalytics] instance.
   String? _sessionId;
 
-  static final Logger _logger = Logger();
+  late final Logger _logger;
 
-  void _initialize() {
+  void _initialize({
+    MPAnalyticsClient? client,
+    MPAnalyticsUser? user,
+    Logger? logger,
+  }) {
+    _logger = logger ?? Logger();
+
     if (!enabled) {
       _verboseLog('MPAnalytics disabled, not initializing');
       return;
     }
+
     _verboseLog('Initializing MPAnalytics');
-    _user = MPAnalyticsUser();
-    _client = MPAnalyticsClient(
-      urlParameters: options.urlParameters,
-    );
+    _user = user ?? MPAnalyticsUser();
+    _client = client ??
+        MPAnalyticsClient(
+          urlParameters: options.urlParameters,
+        );
     _verboseLog('MPAnalytics initialized');
   }
 
