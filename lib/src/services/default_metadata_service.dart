@@ -7,7 +7,13 @@ import 'package:platform_info/platform_info.dart';
 /// {@endtemplate}
 class DefaultMetadataService extends MetadataService {
   /// {@macro default_metadata_service}
-  const DefaultMetadataService();
+  const DefaultMetadataService({
+    Platform? platformInfo,
+  }) : _platformInfo = platformInfo;
+
+  final Platform? _platformInfo;
+
+  Platform get _platform => _platformInfo ?? Platform.instance;
 
   @override
   Future<Map<String, Object>> getMetadata() async {
@@ -27,20 +33,14 @@ class DefaultMetadataService extends MetadataService {
   }
 
   Future<String> _getLocale() async {
-    final platformInfo = Platform.instance;
-
-    return platformInfo.locale;
+    return _platform.locale;
   }
 
   Future<String> _getOS() async {
-    final platformInfo = Platform.instance;
-
-    return platformInfo.operatingSystem.name;
+    return _platform.operatingSystem.name;
   }
 
   Future<String> _getOSVersion() async {
-    final platformInfo = Platform.instance;
-
-    return platformInfo.version;
+    return _platform.version;
   }
 }
