@@ -1,7 +1,8 @@
 name: dart_mp_analytics
 description: A dart only package for wrapper around the Firebase Measurement Protocol API.
 version: 0.1.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/alvarobcprado/dart_mp_analytics
+issue_tracker: https://github.com/alvarobcprado/dart_mp_analytics/issues
 
 environment:
   sdk: ^2.17.0
@@ -16,4 +17,4 @@ dependencies:
 
 dev_dependencies:
   test: ^1.21.0
-  very_good_analysis: ^5.0.0+1
+  very_good_analysis: ^4.0.0+1
