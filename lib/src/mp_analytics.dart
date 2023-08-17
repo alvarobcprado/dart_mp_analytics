@@ -89,7 +89,12 @@ class MPAnalytics {
     MPAnalyticsUser? user,
     Logger? logger,
   }) {
-    _logger = logger ?? Logger();
+    _logger = logger ??
+        Logger(
+          printer: PrettyPrinter(
+            methodCount: 0,
+          ),
+        );
 
     if (!enabled) {
       _verboseLog('MPAnalytics disabled, not initializing');
