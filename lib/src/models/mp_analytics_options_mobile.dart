@@ -1,6 +1,6 @@
 import 'package:dart_mp_analytics/src/models/mp_analytics_options.dart';
 
-/// {@template mp_analytics_options_mobile}
+/// {@macro mp_analytics_options_mobile}
 class MPAnalyticsOptionsMobile extends MPAnalyticsOptions {
   /// {@macro mp_analytics_options_mobile}
   const MPAnalyticsOptionsMobile({

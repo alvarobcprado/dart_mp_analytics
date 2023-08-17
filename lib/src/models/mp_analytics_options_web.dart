@@ -1,6 +1,6 @@
 import 'package:dart_mp_analytics/src/models/mp_analytics_options.dart';
 
-/// {@template mp_analytics_options_web}
+/// {@macro mp_analytics_options_web}
 class MPAnalyticsOptionsWeb extends MPAnalyticsOptions {
   /// {@macro mp_analytics_options_web}
   const MPAnalyticsOptionsWeb({
