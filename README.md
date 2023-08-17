@@ -1,7 +1,7 @@
 <div style="text-align: center; font-family: times new roman">
 <h1>Dart MP Analytics</h1>
   <a href="https://pub.dev/packages/dart_mp_analytics"><img src="https://img.shields.io/pub/v/dart_mp_analytics.svg" alt="Pub.dev Badge"></a>
-	<a href="https://github.com/alvarobcpradodart_mp_analytics/actions"><img src="https://github.com/alvarobcprado/dart_mp_analytics/actions/workflows/test.yml/badge.svg" alt="GitHub Build Badge"></a>
+	<a href="https://github.com/alvarobcprado/dart_mp_analytics/actions"><img src="https://github.com/alvarobcprado/dart_mp_analytics/actions/workflows/test.yml/badge.svg" alt="GitHub Build Badge"></a>
 	<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="MIT License Badge"></a>
     <a href="https://pub.dev/packages/very_good_analysis"><img src="https://img.shields.io/badge/style-very_good_analysis-B22C89.svg" alt="Very Good Analysis Style Badge"></a>
 </div>
