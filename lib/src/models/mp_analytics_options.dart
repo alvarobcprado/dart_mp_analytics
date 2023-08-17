@@ -15,7 +15,7 @@ abstract class MPAnalyticsOptions {
     required this.apiSecret,
   });
 
-  /// {@macro mp_analytics_options_mobile}
+  /// {@template mp_analytics_options_mobile}
   /// The [MPAnalyticsOptions] implementation for the Google Analytics mobile
   /// streams.
   ///
@@ -36,7 +36,7 @@ abstract class MPAnalyticsOptions {
     required String apiSecret,
   }) = MPAnalyticsOptionsMobile;
 
-  /// {@macro mp_analytics_options_web}
+  /// {@template mp_analytics_options_web}
   /// The [MPAnalyticsOptions] implementation for the Google Analytics web
   /// streams.
   ///
