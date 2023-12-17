@@ -194,7 +194,7 @@ class MPAnalytics {
     }
 
     final metadata = <String, Object?>{
-      for (final service in metadataServiceList) ...await service.getMetadata()
+      for (final service in metadataServiceList) ...await service.getMetadata(),
     };
 
     final eventData = <String, Object?>{
