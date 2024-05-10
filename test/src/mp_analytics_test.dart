@@ -1,6 +1,7 @@
 // ignore_for_file: inference_failure_on_function_invocation
 
 import 'package:dart_mp_analytics/dart_mp_analytics.dart';
+import 'package:dart_mp_analytics/src/mp_analytics_client.dart';
 import 'package:dart_mp_analytics/src/mp_analytics_user.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
