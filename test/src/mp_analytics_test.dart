@@ -1,14 +1,11 @@
 // ignore_for_file: inference_failure_on_function_invocation
 
 import 'package:dart_mp_analytics/dart_mp_analytics.dart';
-import 'package:dart_mp_analytics/src/models/mp_analytics_user.dart';
 import 'package:logger/logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 class MockMPAnalyticsClient extends Mock implements MPAnalyticsClient {}
-
-class MockMPAnalyticsUser extends Mock implements MPAnalyticsUser {}
 
 class MockLogger extends Mock implements Logger {}
 
@@ -25,7 +22,6 @@ void main() {
   late bool verbose;
   late Logger logger;
   late MPAnalyticsClient client;
-  late MPAnalyticsUser user;
 
   setUpAll(() {
     registerFallbackValue(Level.info);
@@ -39,7 +35,6 @@ void main() {
     verbose = true;
     logger = MockLogger();
     client = MockMPAnalyticsClient();
-    user = MockMPAnalyticsUser();
 
     analytics = MPAnalytics(
       options: options,
@@ -49,7 +44,6 @@ void main() {
       verbose: verbose,
       logger: logger,
       client: client,
-      user: user,
     );
   });
 
@@ -58,14 +52,12 @@ void main() {
 
     analytics.setUserId(userId);
 
-    verify(() => user.setId(userId)).called(1);
     verify(() => logger.log(Level.info, 'Set user ID: $userId')).called(1);
   });
 
   test('clearUserId clears the user ID', () {
     analytics.clearUserId();
 
-    verify(() => user.clearId()).called(1);
     verify(() => logger.log(Level.info, 'Cleared user ID')).called(1);
   });
 
@@ -75,7 +67,6 @@ void main() {
 
     analytics.setUserProperty(key, value);
 
-    verify(() => user.setProperty(key, value)).called(1);
     verify(() => logger.log(Level.info, 'Set user property: $key = $value'))
         .called(1);
   });
@@ -85,7 +76,6 @@ void main() {
 
     analytics.removeUserProperty(key);
 
-    verify(() => user.removeProperty(key)).called(1);
     verify(() => logger.log(Level.info, 'Removed user property: $key'))
         .called(1);
   });
@@ -95,9 +85,7 @@ void main() {
     const eventParameters = {'param1': 'value1', 'param2': 'value2'};
     const optionsBodyParameters = {'bodyKey': 'bodyValue'};
     const metadata = {'metadataKey': 'metadataValue'};
-    const userData = {'userIdKey': 'userIdValue'};
 
-    when(() => user.data).thenReturn(userData);
     when(() => options.bodyParameters).thenReturn(optionsBodyParameters);
     when(() => metadataServiceList[0].getMetadata())
         .thenAnswer((_) async => metadata);
@@ -113,7 +101,6 @@ void main() {
       ),
     ).called(1);
     verify(() => metadataServiceList[0].getMetadata()).called(1);
-    verify(() => user.data).called(1);
     verify(
       () => client.logEvent(
         any(),
@@ -132,7 +119,6 @@ void main() {
       verbose: verbose,
       logger: logger,
       client: client,
-      user: user,
     );
 
     const eventName = 'event';
@@ -147,7 +133,6 @@ void main() {
       ),
     ).called(1);
     verifyNever(() => metadataServiceList[0].getMetadata());
-    verifyNever(() => user.data).called(0);
     verifyNever(() => client.logEvent(any(), debug: any(named: 'debug')))
         .called(0);
   });
@@ -160,9 +145,7 @@ void main() {
       const optionsBodyParameters = {'bodyKey': 'bodyValue'};
       const optionsUrlParameters = {'urlKey': 'urlValue'};
       const metadata = {'metadataKey': 'metadataValue'};
-      const userData = {'userIdKey': 'userIdValue'};
 
-      when(() => user.data).thenReturn(userData);
       when(() => options.bodyParameters).thenReturn(optionsBodyParameters);
       when(() => options.urlParameters).thenReturn(optionsUrlParameters);
       when(() => metadataServiceList[0].getMetadata())
@@ -177,7 +160,6 @@ void main() {
         enabled: enabled,
         verbose: verbose,
         logger: logger,
-        user: user,
       );
 
       await analytics.logEvent(eventName, parameters: eventParameters);
@@ -204,14 +186,12 @@ void main() {
         verbose: verbose,
         logger: logger,
         client: client,
-        user: user,
       );
 
       const key = 'propertyKey';
 
       analytics.removeUserProperty(key);
 
-      verifyNever(() => user.removeProperty(key));
       verify(
         () => logger.log(
           Level.info,
@@ -234,7 +214,6 @@ void main() {
         verbose: verbose,
         logger: logger,
         client: client,
-        user: user,
       );
 
       const key = 'propertyKey';
@@ -242,11 +221,10 @@ void main() {
 
       analytics.setUserProperty(key, value);
 
-      verifyNever(() => user.setProperty(key, value));
       verify(
         () => logger.log(
           Level.info,
-          'MPAnalytics disabled, not setting user property: $key = $value',
+          'MPAnalytics disabled, not setting user property: {$key : $value}',
         ),
       ).called(1);
     },
@@ -265,14 +243,12 @@ void main() {
         verbose: verbose,
         logger: logger,
         client: client,
-        user: user,
       );
 
       const userId = 'userId';
 
       analytics.setUserId(userId);
 
-      verifyNever(() => user.setId(userId));
       verify(
         () => logger.log(
           Level.info,
@@ -295,10 +271,8 @@ void main() {
         verbose: verbose,
         logger: logger,
         client: client,
-        user: user,
       ).clearUserId();
 
-      verifyNever(() => user.clearId());
       verify(
         () => logger.log(
           Level.info,
