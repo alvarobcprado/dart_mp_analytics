@@ -1,4 +1,4 @@
-import 'package:dart_mp_analytics/src/models/mp_analytics_user.dart';
+import 'package:dart_mp_analytics/src/mp_analytics_user.dart';
 import 'package:test/test.dart';
 
 void main() {
