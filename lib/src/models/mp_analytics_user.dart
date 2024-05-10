@@ -1,5 +1,7 @@
 // ignore_for_file: use_setters_to_change_properties
 
+import 'package:dart_mp_analytics/src/core/user_data_validator.dart';
+
 ///{@template mp_analytics_user}
 /// A class that defines the user that will be added to all events.
 ///
@@ -12,6 +14,7 @@ class MPAnalyticsUser {
 
   String _id = '';
   final Map<String, Object?> _properties = {};
+  final UserDataValidator _validator = UserDataValidator();
 
   /// Returns a [Map] of the user id and user properties that will be added to
   /// all events.
@@ -23,8 +26,12 @@ class MPAnalyticsUser {
   }
 
   /// Sets the user id that will be added to all events.
-  void setId(String id) {
-    _id = id;
+  bool setId(String id) {
+    final isValid = _validator.validateUserId(id);
+
+    if (isValid) _id = id;
+
+    return isValid;
   }
 
   /// Removes the current user id if one exists.
@@ -33,10 +40,13 @@ class MPAnalyticsUser {
   }
 
   /// Sets a user property that will be added to all events.
-  void setProperty(String key, Object value) {
-    _properties[key] = {
-      'value': value,
-    };
+  bool setProperty(String key, Object value) {
+    final isValid = _validator.canAddUserProperty(_properties) &&
+        _validator.validateUserProperty(MapEntry(key, value));
+
+    if (isValid) _properties[key] = {'value': value};
+
+    return isValid;
   }
 
   /// Removes a user property if one exists.

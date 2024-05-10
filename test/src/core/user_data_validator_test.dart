@@ -36,6 +36,31 @@ void main() {
           );
         },
       );
+
+      test(
+        'returns true when user properties length is less than 25',
+        () {
+          final properties = <String, Object>{};
+          for (var i = 0; i < 24; i++) {
+            properties['key$i'] = 'value$i';
+          }
+          expect(validator.canAddUserProperty(properties), true);
+        },
+      );
+
+      test(
+        'throws AssertionError when user properties length is 25',
+        () {
+          final properties = <String, Object>{};
+          for (var i = 0; i < 25; i++) {
+            properties['key$i'] = 'value$i';
+          }
+          expect(
+            () => validator.canAddUserProperty(properties),
+            throwsA(isA<AssertionError>()),
+          );
+        },
+      );
     },
   );
 

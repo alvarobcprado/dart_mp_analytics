@@ -1,5 +1,15 @@
 /// A helper class to validate user analytics data.
 class UserDataValidator {
+  /// Returns `true` if the user properties can be added, `false` otherwise.
+  bool canAddUserProperty(Map<String, Object?> userProperties) {
+    assert(
+      userProperties.length < 25,
+      'User properties length must be less than 25',
+    );
+
+    return userProperties.length < 25;
+  }
+
   /// Validates the given user property.
   ///
   /// Returns `true` if the user properties are valid, `false` otherwise.
