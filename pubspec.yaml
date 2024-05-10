@@ -5,7 +5,7 @@ repository: https://github.com/alvarobcprado/dart_mp_analytics
 issue_tracker: https://github.com/alvarobcprado/dart_mp_analytics/issues
 
 environment:
-  sdk: ">=2.17.0 <4.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   http: ">=0.13.4 <2.0.0"

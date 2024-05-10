@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dart_mp_analytics/src/core/event_validator.dart';
 import 'package:dart_mp_analytics/src/models/mp_analytics_options.dart';
 import 'package:dart_mp_analytics/src/models/mp_analytics_user.dart';
 import 'package:dart_mp_analytics/src/mp_analytics_client.dart';
@@ -41,12 +42,10 @@ class MPAnalytics {
     this.enabled = true,
     this.verbose = false,
     Logger? logger,
-    MPAnalyticsUser? user,
     MPAnalyticsClient? client,
   }) {
     _initialize(
       logger: logger,
-      user: user,
       client: client,
     );
   }
@@ -84,9 +83,10 @@ class MPAnalytics {
 
   late final Logger _logger;
 
+  final EventValidator _validator = EventValidator();
+
   void _initialize({
     MPAnalyticsClient? client,
-    MPAnalyticsUser? user,
     Logger? logger,
   }) {
     _logger = logger ??
@@ -102,7 +102,7 @@ class MPAnalytics {
     }
 
     _verboseLog('Initializing MPAnalytics');
-    _user = user ?? MPAnalyticsUser();
+    _user = MPAnalyticsUser();
     _client = client ??
         MPAnalyticsClient(
           urlParameters: options.urlParameters,
@@ -135,7 +135,13 @@ class MPAnalytics {
       _verboseLog('MPAnalytics disabled, not setting user ID: $id');
       return;
     }
-    _user.setId(id);
+    final isValid = _user.setId(id);
+
+    if (!isValid) {
+      _verboseLog('Invalid user ID, not setting user ID: $id');
+      return;
+    }
+
     _verboseLog('Set user ID: $id');
   }
 
@@ -157,11 +163,18 @@ class MPAnalytics {
   void setUserProperty(String key, Object value) {
     if (!enabled) {
       _verboseLog(
-        'MPAnalytics disabled, not setting user property: $key = $value',
+        'MPAnalytics disabled, not setting user property: {$key : $value}',
       );
       return;
     }
-    _user.setProperty(key, value);
+    final isValid = _user.setProperty(key, value);
+
+    if (!isValid) {
+      _verboseLog(
+        'Invalid user property, not setting user property: {$key : $value}',
+      );
+      return;
+    }
     _verboseLog('Set user property: $key = $value');
   }
 
@@ -190,6 +203,16 @@ class MPAnalytics {
   }) async {
     if (!enabled) {
       _verboseLog('MPAnalytics disabled, not logging event: $name');
+      return;
+    }
+
+    final (isValidEventName, isValidEventParameter) = (
+      _validator.validateEventName(name),
+      _validator.validateEventParameters(parameters),
+    );
+
+    if (!isValidEventName || !isValidEventParameter) {
+      _verboseLog('Invalid event name or parameters, not logging event: $name');
       return;
     }
 
