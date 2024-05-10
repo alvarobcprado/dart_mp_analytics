@@ -4,7 +4,8 @@ import 'package:dart_mp_analytics/dart_mp_analytics.dart';
 
 void main() async {
   // Initialize MPAnalytics options
-  const options = MPAnalyticsOptionsWeb(
+  // or use MPAnalyticsOptions.mobileStream()
+  const options = MPAnalyticsOptions.webStream(
     clientId: 'your_client_id',
     measurementId: 'your_measurement_id',
     apiSecret: 'your_api_secret',
