@@ -1,4 +1,4 @@
-import 'package:dart_mp_analytics/dart_mp_analytics.dart';
+import 'package:dart_mp_analytics/src/mp_analytics_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
