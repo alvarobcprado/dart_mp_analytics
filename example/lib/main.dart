@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:dart_mp_analytics/dart_mp_analytics.dart';
 
 void main() async {
   // Initialize MPAnalytics options
-  const options = MPAnalyticsOptionsWeb(
+  // or use MPAnalyticsOptions.mobileStream()
+  const options = MPAnalyticsOptions.webStream(
     clientId: 'your_client_id',
     measurementId: 'your_measurement_id',
     apiSecret: 'your_api_secret',
@@ -13,7 +16,7 @@ void main() async {
     options: options,
     debugAnalytics: true, // Enable debug mode for testing
     verbose: true, // Enable verbose logging
-  );
+  )..initialize();
 
   // Log an event
   await analytics.logEvent(
@@ -41,4 +44,6 @@ void main() async {
   analytics
     ..clearUserId()
     ..removeUserProperty('membership');
+
+  exit(0);
 }

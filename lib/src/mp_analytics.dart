@@ -3,11 +3,12 @@ import 'dart:convert';
 
 import 'package:dart_mp_analytics/src/core/event_validator.dart';
 import 'package:dart_mp_analytics/src/models/mp_analytics_options.dart';
-import 'package:dart_mp_analytics/src/models/mp_analytics_user.dart';
 import 'package:dart_mp_analytics/src/mp_analytics_client.dart';
+import 'package:dart_mp_analytics/src/mp_analytics_user.dart';
 import 'package:dart_mp_analytics/src/services/default_metadata_service.dart';
 import 'package:dart_mp_analytics/src/services/metadata_service.dart';
 import 'package:logger/logger.dart';
+import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
 /// {@template mp_analytics}
@@ -41,14 +42,7 @@ class MPAnalytics {
     this.debugAnalytics = false,
     this.enabled = true,
     this.verbose = false,
-    Logger? logger,
-    MPAnalyticsClient? client,
-  }) {
-    _initialize(
-      logger: logger,
-      client: client,
-    );
-  }
+  });
 
   /// The options used to configure the [MPAnalytics] instance. This must be an
   /// instance of correct [MPAnalyticsOptions] subclass for the platform you are
@@ -72,29 +66,50 @@ class MPAnalytics {
   /// Whether or not to log debug messages to the console.
   final bool verbose;
 
-  /// The user associated with this [MPAnalytics] instance.
   late final MPAnalyticsUser _user;
 
-  /// The client used to send requests to the Google Analytics Measurement
   late final MPAnalyticsClient _client;
-
-  /// The session ID for this [MPAnalytics] instance.
-  String? _sessionId;
 
   late final Logger _logger;
 
-  final EventValidator _validator = EventValidator();
+  late final EventValidator _validator;
 
-  void _initialize({
+  late final DateTime _sessionStartTime;
+
+  bool _isInitialized = false;
+
+  /// Whether or not the [MPAnalytics] instance has been initialized.
+  bool get isInitialized => _isInitialized;
+
+  String? _sessionId;
+  Timer? _sessionTimer;
+
+  /// Initializes the [MPAnalytics] instance with mock objects for testing.
+  /// This method is only meant to be used for testing purposes and should not
+  /// be used in production code.
+  @visibleForTesting
+  void initializeMock({
+    MPAnalyticsUser? user,
     MPAnalyticsClient? client,
-    Logger? logger,
+    EventValidator? validator,
   }) {
-    _logger = logger ??
-        Logger(
-          printer: PrettyPrinter(
-            methodCount: 0,
-          ),
-        );
+    _logger = Logger(printer: PrettyPrinter(methodCount: 0));
+
+    if (!enabled) {
+      return;
+    }
+
+    _user = user ?? MPAnalyticsUser();
+    _client = client ?? MPAnalyticsClient(urlParameters: options.urlParameters);
+    _validator = EventValidator();
+    _sessionStartTime = DateTime.now().toUtc();
+
+    _isInitialized = true;
+  }
+
+  /// Initializes the [MPAnalytics] instance.
+  void initialize() {
+    _logger = Logger(printer: PrettyPrinter(methodCount: 0));
 
     if (!enabled) {
       _verboseLog('MPAnalytics disabled, not initializing');
@@ -103,10 +118,10 @@ class MPAnalytics {
 
     _verboseLog('Initializing MPAnalytics');
     _user = MPAnalyticsUser();
-    _client = client ??
-        MPAnalyticsClient(
-          urlParameters: options.urlParameters,
-        );
+    _client = MPAnalyticsClient(urlParameters: options.urlParameters);
+    _validator = EventValidator();
+    _sessionStartTime = DateTime.now().toUtc();
+    _isInitialized = true;
     _verboseLog('MPAnalytics initialized');
   }
 
@@ -115,10 +130,12 @@ class MPAnalytics {
       _verboseLog('MPAnalytics disabled, not creating session ID');
       return '';
     }
+
     if (_sessionId == null) {
       _sessionId = const Uuid().v4();
       _verboseLog('Created new session ID');
-      Timer(const Duration(minutes: 30), () {
+      _sessionTimer?.cancel();
+      _sessionTimer = Timer(const Duration(minutes: 30), () {
         _sessionId = null;
         _verboseLog('Session ID expired');
       });
@@ -135,6 +152,9 @@ class MPAnalytics {
       _verboseLog('MPAnalytics disabled, not setting user ID: $id');
       return;
     }
+
+    _verifyInitialized();
+
     final isValid = _user.setId(id);
 
     if (!isValid) {
@@ -152,6 +172,9 @@ class MPAnalytics {
       _verboseLog('MPAnalytics disabled, not clearing user ID');
       return;
     }
+
+    _verifyInitialized();
+
     _user.clearId();
     _verboseLog('Cleared user ID');
   }
@@ -167,6 +190,9 @@ class MPAnalytics {
       );
       return;
     }
+
+    _verifyInitialized();
+
     final isValid = _user.setProperty(key, value);
 
     if (!isValid) {
@@ -185,6 +211,8 @@ class MPAnalytics {
       _verboseLog('MPAnalytics disabled, not removing user property: $key');
       return;
     }
+
+    _verifyInitialized();
     _user.removeProperty(key);
     _verboseLog('Removed user property: $key');
   }
@@ -206,6 +234,7 @@ class MPAnalytics {
       return;
     }
 
+    _verifyInitialized();
     final (isValidEventName, isValidEventParameter) = (
       _validator.validateEventName(name),
       _validator.validateEventParameters(parameters),
@@ -220,12 +249,15 @@ class MPAnalytics {
       for (final service in metadataServiceList) ...await service.getMetadata(),
     };
 
+    final engagementTime =
+        DateTime.now().toUtc().difference(_sessionStartTime).inMilliseconds;
+
     final eventData = <String, Object?>{
       'name': name,
       'params': {
         // Required parameters to show up in Firebase Analytics
         // https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?hl=pt-br&client_type=gtag#recommended_parameters_for_reports
-        'engagement_time_msec': '100',
+        'engagement_time_msec': engagementTime,
         'session_id': _getOrCreateSessionId(),
         ...metadata,
         ...parameters,
@@ -246,8 +278,15 @@ class MPAnalytics {
   }
 
   void _verboseLog(String message) {
-    if (verbose) {
-      _logger.log(Level.info, message);
+    if (verbose) _logger.log(Level.info, message);
+  }
+
+  void _verifyInitialized() {
+    if (!isInitialized) {
+      throw StateError(
+        'MPAnalytics instance must be initialized first. Make sure to call the '
+        'initialize method before calling any other methods.',
+      );
     }
   }
 }
