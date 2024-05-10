@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dart_mp_analytics/dart_mp_analytics.dart';
 
 void main() async {
@@ -13,7 +15,7 @@ void main() async {
     options: options,
     debugAnalytics: true, // Enable debug mode for testing
     verbose: true, // Enable verbose logging
-  );
+  )..initialize();
 
   // Log an event
   await analytics.logEvent(
@@ -41,4 +43,6 @@ void main() async {
   analytics
     ..clearUserId()
     ..removeUserProperty('membership');
+
+  exit(0);
 }
