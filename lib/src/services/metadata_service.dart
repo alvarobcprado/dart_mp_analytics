@@ -2,6 +2,7 @@
 /// An abstract class that defines the interface for metadata services.
 /// Metadata services are used to add metadata to all events.
 /// {@endtemplate}
+// ignore: one_member_abstracts
 abstract class MetadataService {
   /// {@macro metadata_service}
   const MetadataService();

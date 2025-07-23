@@ -1,5 +1,3 @@
-// ignore_for_file: use_setters_to_change_properties
-
 import 'package:dart_mp_analytics/src/core/user_data_validator.dart';
 
 ///{@template mp_analytics_user}
@@ -41,7 +39,8 @@ class MPAnalyticsUser {
 
   /// Sets a user property that will be added to all events.
   bool setProperty(String key, Object value) {
-    final isValid = _validator.canAddUserProperty(_properties) &&
+    final isValid =
+        _validator.canAddUserProperty(_properties) &&
         _validator.validateUserProperty(MapEntry(key, value));
 
     if (isValid) _properties[key] = {'value': value};

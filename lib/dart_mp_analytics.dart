@@ -1,5 +1,5 @@
 /// A Dart only library for working with Google Analytics Measurement Protocol
-library dart_mp_analytics;
+library;
 
 export 'src/models/mp_analytics_options.dart';
 export 'src/mp_analytics.dart';

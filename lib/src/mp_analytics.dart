@@ -91,7 +91,6 @@ class MPAnalytics {
   void initializeMock({
     MPAnalyticsUser? user,
     MPAnalyticsClient? client,
-    EventValidator? validator,
   }) {
     _logger = Logger(printer: PrettyPrinter(methodCount: 0));
 

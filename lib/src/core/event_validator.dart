@@ -64,15 +64,17 @@ class EventValidator {
     if (!parameters.keys.every((key) => key.length <= 40)) return false;
 
     assert(
-      parameters.values
-          .whereType<String>()
-          .every((value) => value.length <= 100),
+      parameters.values.whereType<String>().every(
+        (value) => value.length <= 100,
+      ),
       'Event parameter values must be 100 characters or less',
     );
 
-    if (!parameters.values
-        .whereType<String>()
-        .every((value) => value.length <= 100)) return false;
+    if (!parameters.values.whereType<String>().every(
+      (value) => value.length <= 100,
+    )) {
+      return false;
+    }
 
     return true;
   }
