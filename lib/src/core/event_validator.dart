@@ -1,7 +1,12 @@
 import 'package:dart_mp_analytics/src/core/reserved_events.dart';
 
+/// {@template event_validator}
 /// A helper class to validate event names and parameters.
+/// {@endtemplate}
 class EventValidator {
+  /// {@macro event_validator}
+  const EventValidator();
+
   /// Validates the given event name.
   ///
   /// Returns `true` if the event name is valid, `false` otherwise.

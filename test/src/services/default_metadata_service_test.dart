@@ -9,7 +9,7 @@ void main() {
 
     setUp(() {
       mockPlatform = FakePlatform(
-        operatingSystem: OperatingSystem.iOS,
+        operatingSystem: const OperatingSystem.iOS(),
         version: '14.5.1',
         locale: 'en_US',
       );

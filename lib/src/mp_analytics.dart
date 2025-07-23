@@ -8,7 +8,6 @@ import 'package:dart_mp_analytics/src/mp_analytics_user.dart';
 import 'package:dart_mp_analytics/src/services/default_metadata_service.dart';
 import 'package:dart_mp_analytics/src/services/metadata_service.dart';
 import 'package:logger/logger.dart';
-import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
 /// {@template mp_analytics}
@@ -42,7 +41,14 @@ class MPAnalytics {
     this.debugAnalytics = false,
     this.enabled = true,
     this.verbose = false,
-  });
+    MPAnalyticsUser? user,
+    MPAnalyticsClient? client,
+  }) {
+    _user = user ?? MPAnalyticsUser();
+    _client = client ?? MPAnalyticsClient(urlParameters: options.urlParameters);
+    _validator = const EventValidator();
+    _logger = Logger(printer: PrettyPrinter(methodCount: 0));
+  }
 
   /// The options used to configure the [MPAnalytics] instance. This must be an
   /// instance of correct [MPAnalyticsOptions] subclass for the platform you are
@@ -84,41 +90,14 @@ class MPAnalytics {
   String? _sessionId;
   Timer? _sessionTimer;
 
-  /// Initializes the [MPAnalytics] instance with mock objects for testing.
-  /// This method is only meant to be used for testing purposes and should not
-  /// be used in production code.
-  @visibleForTesting
-  void initializeMock({
-    MPAnalyticsUser? user,
-    MPAnalyticsClient? client,
-  }) {
-    _logger = Logger(printer: PrettyPrinter(methodCount: 0));
-
-    if (!enabled) {
-      return;
-    }
-
-    _user = user ?? MPAnalyticsUser();
-    _client = client ?? MPAnalyticsClient(urlParameters: options.urlParameters);
-    _validator = EventValidator();
-    _sessionStartTime = DateTime.now().toUtc();
-
-    _isInitialized = true;
-  }
-
   /// Initializes the [MPAnalytics] instance.
   void initialize() {
-    _logger = Logger(printer: PrettyPrinter(methodCount: 0));
-
     if (!enabled) {
       _verboseLog('MPAnalytics disabled, not initializing');
       return;
     }
 
     _verboseLog('Initializing MPAnalytics');
-    _user = MPAnalyticsUser();
-    _client = MPAnalyticsClient(urlParameters: options.urlParameters);
-    _validator = EventValidator();
     _sessionStartTime = DateTime.now().toUtc();
     _isInitialized = true;
     _verboseLog('MPAnalytics initialized');

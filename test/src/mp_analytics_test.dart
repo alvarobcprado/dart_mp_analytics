@@ -1,5 +1,3 @@
-// ignore_for_file: inference_failure_on_function_invocation
-
 import 'package:dart_mp_analytics/dart_mp_analytics.dart';
 import 'package:dart_mp_analytics/src/mp_analytics_client.dart';
 import 'package:dart_mp_analytics/src/mp_analytics_user.dart';
@@ -37,10 +35,9 @@ void main() {
         metadataServiceList: metadataServiceList,
         debugAnalytics: debugAnalytics,
         enabled: enabled,
-      )..initializeMock(
-          user: user,
-          client: client,
-        );
+        user: user,
+        client: client,
+      )..initialize();
     },
   );
 
@@ -67,6 +64,8 @@ void main() {
       test(
         'does not initialize the MPAnalytics instance when disabled',
         () {
+          when(() => options.urlParameters).thenReturn({});
+
           analytics = MPAnalytics(
             options: options,
             metadataServiceList: metadataServiceList,
@@ -82,6 +81,8 @@ void main() {
         'throws a StateError when trying to use the MPAnalytics before '
         'initializing',
         () {
+          when(() => options.urlParameters).thenReturn({});
+
           analytics = MPAnalytics(
             options: options,
             metadataServiceList: metadataServiceList,
@@ -156,7 +157,9 @@ void main() {
             metadataServiceList: metadataServiceList,
             debugAnalytics: debugAnalytics,
             enabled: false,
-          )..initializeMock(user: user, client: client);
+            user: user,
+            client: client,
+          )..initialize();
 
           const key = 'propertyKey';
 
@@ -174,7 +177,9 @@ void main() {
             metadataServiceList: metadataServiceList,
             debugAnalytics: debugAnalytics,
             enabled: false,
-          )..initializeMock(user: user, client: client);
+            user: user,
+            client: client,
+          )..initialize();
 
           const key = 'propertyKey';
           const value = 'propertyValue';
@@ -193,7 +198,9 @@ void main() {
             metadataServiceList: metadataServiceList,
             debugAnalytics: debugAnalytics,
             enabled: false,
-          )..initializeMock(user: user, client: client);
+            user: user,
+            client: client,
+          )..initialize();
 
           const userId = 'userId';
 
@@ -207,12 +214,14 @@ void main() {
         'clearUserId do not clear user ID when disabled',
         () async {
           MPAnalytics(
-            options: options,
-            metadataServiceList: metadataServiceList,
-            debugAnalytics: debugAnalytics,
-            enabled: false,
-          )
-            ..initializeMock(user: user, client: client)
+              options: options,
+              metadataServiceList: metadataServiceList,
+              debugAnalytics: debugAnalytics,
+              enabled: false,
+              user: user,
+              client: client,
+            )
+            ..initialize()
             ..clearUserId();
 
           verifyNever(() => user.clearId());
@@ -235,10 +244,12 @@ void main() {
 
           when(() => user.data).thenReturn(userData);
           when(() => options.bodyParameters).thenReturn(optionsBodyParameters);
-          when(() => metadataServiceList[0].getMetadata())
-              .thenAnswer((_) async => metadata);
-          when(() => client.logEvent(any(), debug: any(named: 'debug')))
-              .thenAnswer((_) async => null);
+          when(
+            () => metadataServiceList[0].getMetadata(),
+          ).thenAnswer((_) async => metadata);
+          when(
+            () => client.logEvent(any(), debug: any(named: 'debug')),
+          ).thenAnswer((_) async => null);
 
           await analytics.logEvent(eventName, parameters: eventParameters);
 
@@ -261,7 +272,9 @@ void main() {
             metadataServiceList: metadataServiceList,
             debugAnalytics: debugAnalytics,
             enabled: false,
-          )..initializeMock(user: user, client: client);
+            user: user,
+            client: client,
+          )..initialize();
 
           const eventName = 'event';
           const parameters = {'param1': 'value1', 'param2': 'value2'};
@@ -270,8 +283,9 @@ void main() {
 
           verifyNever(() => metadataServiceList[0].getMetadata());
           verifyNever(() => user.data).called(0);
-          verifyNever(() => client.logEvent(any(), debug: any(named: 'debug')))
-              .called(0);
+          verifyNever(
+            () => client.logEvent(any(), debug: any(named: 'debug')),
+          ).called(0);
         },
       );
 
