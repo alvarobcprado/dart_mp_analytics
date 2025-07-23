@@ -5,16 +5,16 @@ repository: https://github.com/alvarobcprado/dart_mp_analytics
 issue_tracker: https://github.com/alvarobcprado/dart_mp_analytics/issues
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ">=3.7.0 <4.0.0"
 
 dependencies:
-  http: ">=1.1.0 <2.0.0"
-  logger: ^2.2.0
-  meta: ^1.15.0
-  mocktail: ^1.0.3
-  platform_info: ^4.0.2
-  uuid: ^4.4.0
+  http: ^1.4.0
+  logger: ^2.6.1
+  meta: ^1.17.0
+  mocktail: ^1.0.4
+  platform_info: ^5.0.0
+  uuid: ^4.5.1
 
 dev_dependencies:
-  test: ^1.25.5
-  very_good_analysis: ^5.1.0
+  test: ^1.26.3
+  very_good_analysis: ^9.0.0
