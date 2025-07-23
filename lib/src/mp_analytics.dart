@@ -7,7 +7,7 @@ import 'package:dart_mp_analytics/src/mp_analytics_client.dart';
 import 'package:dart_mp_analytics/src/mp_analytics_user.dart';
 import 'package:dart_mp_analytics/src/services/default_metadata_service.dart';
 import 'package:dart_mp_analytics/src/services/metadata_service.dart';
-import 'package:dart_mp_analytics/src/services/mt_logger.dart';
+import 'package:dart_mp_analytics/src/services/mp_logger.dart';
 import 'package:uuid/uuid.dart';
 
 /// {@template mp_analytics}
@@ -77,8 +77,6 @@ class MPAnalytics {
 
   late final EventValidator _validator;
 
-  late final DateTime _sessionStartTime;
-
   bool _isInitialized = false;
 
   /// Whether or not the [MPAnalytics] instance has been initialized.
@@ -86,6 +84,7 @@ class MPAnalytics {
 
   String? _sessionId;
   Timer? _sessionTimer;
+  late Stopwatch _engagementStopwatch;
 
   /// Initializes the [MPAnalytics] instance.
   void initialize() {
@@ -95,7 +94,7 @@ class MPAnalytics {
     }
 
     _debugLog('Initializing MPAnalytics');
-    _sessionStartTime = DateTime.now().toUtc();
+    _engagementStopwatch = Stopwatch()..start();
     _isInitialized = true;
     _debugLog('MPAnalytics initialized');
   }
@@ -224,15 +223,12 @@ class MPAnalytics {
       for (final service in metadataServiceList) ...await service.getMetadata(),
     };
 
-    final engagementTime =
-        DateTime.now().toUtc().difference(_sessionStartTime).inMilliseconds;
-
     final eventData = <String, Object?>{
       'name': name,
       'params': {
         // Required parameters to show up in Firebase Analytics
         // https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?hl=pt-br&client_type=gtag#recommended_parameters_for_reports
-        'engagement_time_msec': engagementTime,
+        'engagement_time_msec': _calculateEngagementTime(),
         'session_id': _getOrCreateSessionId(),
         ...metadata,
         ...parameters,
@@ -258,6 +254,15 @@ class MPAnalytics {
 
   void _errorLog(String message) {
     _logger.log(MPLogLevel.error, message);
+  }
+
+  int _calculateEngagementTime() {
+    final elapsed = _engagementStopwatch.elapsedMilliseconds;
+    _engagementStopwatch
+      ..reset()
+      ..start();
+
+    return elapsed;
   }
 
   void _verifyInitialized() {
