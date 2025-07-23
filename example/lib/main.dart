@@ -15,7 +15,6 @@ void main() async {
   final analytics = MPAnalytics(
     options: options,
     debugAnalytics: true, // Enable debug mode for testing
-    verbose: true, // Enable verbose logging
   )..initialize();
 
   // Log an event

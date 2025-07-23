@@ -5,7 +5,7 @@ import 'package:dart_mp_analytics/src/core/reserved_events.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final validator = EventValidator();
+  const validator = EventValidator();
   final reservedEventNames = reservedEvents.toList();
   group(
     'validateEventName',
